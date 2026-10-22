@@ -1,0 +1,60 @@
+I want to create a college event registration website called Fest-Register
+This was the problem statement:
+Problem Statement 1: College Event Registration Website
+Create a simple website for a college technical event that includes:
+
+Event name, date, venue, and other relevant details.
+
+A registration form to collect the student's name, roll number, and email address.
+
+Basic form validation and a success message after submission.
+
+A clean, responsive, and user-friendly design.
+
+I want you to create this using Express-React-Node (all js) stack and below is the architecture you must enforce in the project with no hallucinations
+
+-> The website is going to be sign-in free with no undertaking signins (However it should start with the fields enter your name and the college year you study in which is from 1 to 4 and the branch which includes the following - cse, cse-ai&ml, cse-ds, cse-cyber security, IT, ECE, EEE, Mechanical, Aeronautical and Civil) and then the roll number and then after submitting the details it should land to the home page.
+
+-> Use proper styling with a switch option between light and dark modes
+
+-> At the Home page which is going to be the landing page it should show pre existing events in form of cards and at the bottom right there should be a button with a plus icon to add a new event
+
+->  At top left there should be 3 lines to have the following fields that are working- Home which is landing page that we are now in, My events that create list of created event, Participations that show the events which are not created by me, Profile that shows the profile, sign out that bring backs to the previous non-sign in but entry page that we discussed about
+the sequence should be:
+
+Home (current page/landing page)
+Profile
+Add friends
+My Events
+My Participations
+Favourites
+Scheduled events
+
+
+-> In the My events page it should be able to store the events that are created by this particular profile such that when the existing user with the same details login backs again it should not be gone. This is the same with Participations page.
+
+-> To retain the information make sure there wont be any duplicate names that means if the user uses a name, it should be unique for all and the events should be registered with this name only. THere can be the following ambiguities as well you can solve them below way:
+
+-> User uses same name but different branch, year etc. Consider this as an update which means you login with the same name but you will update the branch and year as previously changed. The updation should be visible in all pages which is not just limited to the profile after the user logins but also if someone else participates in an event created by this user, when they click on event creator details, it should be updated there too. If the user uses his same details then let it be.
+
+-> In the profile page, you have the details shown by the user, there should be an option to update details where the user can update his name and make sure he cannot update into already existing other name, optionally add a phone number with add your phone and add your profile picture which are not compulsory fields. However to participate in any event or create any event the user must has his phone number.
+
+-> There is also a notification icon at the top right that shows the notifications like event created, event participated, event cancelled, if the time of the event is one day to go, 2 days to go, 1 hr to go etc.
+
+-> Now comes the friends part, when clicked on friends icon it shows the list of friends you chose as friends and a plus icon(which is in bottom right however it should not overlap with the plus icon in home screen to create new event) when clicked will give a search bar to search according to name, rooll number, branch or year and there is also an option in filter them accordingly by this. Oncce the user is found you add friends if friends already it shows already friends and also there is an option to remove friend as well if added friends it should notify to both the users, if removed friends, it should notify to the person who removed only and also silenlty removing friend with the other user who got removed.
+
+-> Now comes the important homw screen when you see events you can search any events with the search bar working you can filter them by trending, new, old, running, outdated. All the event cards which should be in rectangular shape and the home section should be scrollable if there are more events. When you hover on it the event should be a bit enlarged but should not overwrite on another exisiting ui and shoul dbe smooth, The event card should have name, event tag, date and time, status of running and outdated and visible description (If the description is too long it should have ...) and there should be a button for checkout with arrow sign when clicked it takes you to the event as conditional rendering and it should also have the back icon to get back to event. When you click on checkout it should have conditional rendering on the home screen itself this time the plus icon also goes away but stays when you are in normal home screen. When you click on any event it should show its title, followed by time and an active or outdated display and then it should have the full description kept by the creator and the entire page should be scrollable in the end in the div it self it should show mutual friends who registered for the event and should show people only if they have registered the div itself should be seperately scrollable for this mutual friends and finally at the bottom page it should give the Participate button redirecting to a form that is created by the user. When the user fills and submits, it should be visible for others who are about to register for this same even who are mutual friends with this user and also notify the event creator that this user with name and roll no registered for the event  and should also notify the registered user that he has registered to the event successfully and should be shown in the My participations page. Note that the button register should not be clickable if the event had expired and when hoevered it says cannot register expired event. In the event cars there is a favourite star icon that when clicked the star becomes yellow and the event card is added to favourites
+
+-> Now comes the other main part creating the new event, when the user creates new event  after clicking with plus icon it happens with steps, in step 1 it gives the user to enter title, followed by registration time(time start and time end), event date(time start to time end) make sure a restriction that the event date should not be before or overlapping with registration date, next the venue, by the way venue should be visible in event cards as well. Then finally the full event description, then a toggle that says "friends only can register", with the other button says choose the users you can only allow to register with that it shows a full list of users and it should be multi select. after that it should indeed reflect that only those users can see from the home screen. In the next step it gives to create fields for the registration form. It should start empty with an option below add field when you click that it has field name, then required toggle if on it is required* else optional and all the field entries should be string only, this form would automatically have the submit field and when the event creator goes to see his my events page later and clicks on this event it should show the people who registered for this event and as a conditional rendering when you click on that user it takes full page as conditinal rendering and gives a scrollable page of field name and what the user had filled in it. He can also delete the users with delete option and he can see all users who registered for it and delete whoever he wants, when deleted the event creator would not get the notification but the registered user who got deleted will saying the event creator had removed you.
+
+-> Note that the event cards in favourites, registered events and my events should also be as cards
+
+-> If you have any more architectural doubts ask it than blindly following
+
+-> Use a relational database to store as it the user details needs to be stored properly and also has friends, events etc.
+
+->use node and express as backend, react using vite but with js language as frontend and also make a really interactive ui for on hovers, clicking buttons,
+
+-> In the notifications when clicked it should do a conditional rendering on home page and shows all notifications sliding it to left or right gives delete icon when clicked removes the notification and there is a clear all symbol that removes all notifications and at top right there should be silent notifications that won't pop up when a new notification arrives. By the way when a new notification arrives it should pop up on any screen there is. For the form use google form itself.
+
+-> The notification when pop up showuld stay for 5 seconds and go and also it should be swipeable

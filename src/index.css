@@ -1,0 +1,142 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@keyframes slideInFromLeft {
+  0% {
+    opacity: 0;
+    transform: translate3d(-32px, 0, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes drawerSlideFromLeft {
+  0% {
+    opacity: 0.7;
+    transform: translate3d(-100%, 0, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes cardSlideFromLeft {
+  0% {
+    opacity: 0;
+    transform: translate3d(-22px, 0, 0) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes fadeInBackdrop {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@layer base {
+  :root {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #050507;
+  }
+
+  .font-display {
+    font-family: 'Boldonse', 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: -0.02em;
+    line-height: 1.42 !important;
+  }
+
+  .font-mono,
+  .tabular-nums {
+    font-family: 'JetBrains Mono', monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .mdnt-hero-glow {
+    background-image:
+      radial-gradient(circle at 18% 15%, rgba(122, 0, 255, 0.28) 0%, transparent 48%),
+      radial-gradient(circle at 82% 22%, rgba(191, 255, 0, 0.16) 0%, transparent 45%),
+      radial-gradient(circle at 50% 90%, rgba(217, 70, 239, 0.14) 0%, transparent 55%);
+  }
+
+  .mdnt-grid-bg {
+    background-size: 36px 36px;
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  }
+
+  .animate-slide-left {
+    animation: slideInFromLeft 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    will-change: transform, opacity;
+  }
+
+  .animate-drawer-left {
+    animation: drawerSlideFromLeft 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    will-change: transform, opacity;
+  }
+
+  .animate-card-left {
+    animation: cardSlideFromLeft 340ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    will-change: transform, opacity;
+  }
+
+  .animate-fade-backdrop {
+    animation: fadeInBackdrop 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    transition:
+      background-color 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      color 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  button:not(:disabled):hover {
+    transform: translate3d(0, -2px, 0);
+  }
+
+  button:not(:disabled):active {
+    transform: translate3d(0, 0, 0) scale(0.98);
+  }
+
+  .float-card {
+    transition:
+      transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 300ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 300ms cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 300ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform, box-shadow;
+  }
+
+  .float-card:hover {
+    transform: translate3d(0, -4px, 0);
+  }
+}

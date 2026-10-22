@@ -1,0 +1,325 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Pillar 1 & Phase 4.1: Global Safety Net (Default Deny)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Phase 3: Reusable Hardened Global Helpers
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidBranch(branch) {
+      return branch is string && branch.size() <= 40 && (
+        branch == 'cse' ||
+        branch == 'cse-ai&ml' ||
+        branch == 'cse-ds' ||
+        branch == 'cse-cyber security' ||
+        branch == 'IT' ||
+        branch == 'ECE' ||
+        branch == 'EEE' ||
+        branch == 'Mechanical' ||
+        branch == 'Aeronautical' ||
+        branch == 'Civil'
+      );
+    }
+
+    // Entity Blueprints (Pillar 2: Anti-Update-Gap)
+    function isValidUserPublic(data) {
+      return data.keys().hasAll(['uid', 'name', 'rollNumber', 'year', 'branch', 'createdAt', 'updatedAt']) &&
+        data.keys().hasOnly(['uid', 'name', 'rollNumber', 'year', 'branch', 'avatarUrl', 'createdAt', 'updatedAt']) &&
+        data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 && data.uid.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.uid == request.auth.uid &&
+        data.name is string && data.name.size() >= 1 && data.name.size() <= 80 &&
+        data.rollNumber is string && data.rollNumber.size() >= 1 && data.rollNumber.size() <= 40 &&
+        data.year is int && data.year >= 1 && data.year <= 4 &&
+        isValidBranch(data.branch) &&
+        (!('avatarUrl' in data) || (data.avatarUrl is string && data.avatarUrl.size() <= 2048)) &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidUserPrivate(data) {
+      return data.keys().hasAll(['uid', 'phone', 'silentNotifications', 'updatedAt']) &&
+        data.keys().hasOnly(['uid', 'phone', 'email', 'silentNotifications', 'updatedAt']) &&
+        data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 && data.uid.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.uid == request.auth.uid &&
+        data.phone is string && data.phone.size() >= 7 && data.phone.size() <= 20 &&
+        (!('email' in data) || (data.email is string && data.email.size() <= 120)) &&
+        data.silentNotifications is bool &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidEvent(data) {
+      return data.keys().hasAll([
+          'creatorId', 'title', 'tag', 'venue', 'description',
+          'registrationStart', 'registrationEnd', 'eventStart', 'eventEnd',
+          'friendsOnly', 'status', 'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'creatorId', 'title', 'tag', 'venue', 'description',
+          'registrationStart', 'registrationEnd', 'eventStart', 'eventEnd',
+          'friendsOnly', 'status', 'createdAt', 'updatedAt'
+        ]) &&
+        data.creatorId is string && data.creatorId.size() >= 1 && data.creatorId.size() <= 128 && data.creatorId.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.creatorId == request.auth.uid &&
+        data.title is string && data.title.size() >= 2 && data.title.size() <= 120 &&
+        data.tag is string && data.tag.size() >= 2 && data.tag.size() <= 40 &&
+        data.venue is string && data.venue.size() >= 2 && data.venue.size() <= 120 &&
+        data.description is string && data.description.size() >= 5 && data.description.size() <= 4000 &&
+        data.registrationStart is string && data.registrationStart.size() >= 1 && data.registrationStart.size() <= 40 &&
+        data.registrationEnd is string && data.registrationEnd.size() >= 1 && data.registrationEnd.size() <= 40 &&
+        data.eventStart is string && data.eventStart.size() >= 1 && data.eventStart.size() <= 40 &&
+        data.eventEnd is string && data.eventEnd.size() >= 1 && data.eventEnd.size() <= 40 &&
+        data.friendsOnly is bool &&
+        data.status is string && data.status.size() <= 20 &&
+        (data.status == 'running' || data.status == 'outdated' || data.status == 'cancelled') &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidRegistration(data) {
+      return data.keys().hasAll(['eventId', 'userId', 'eventCreatorId', 'studentName', 'rollNumber', 'createdAt']) &&
+        data.keys().hasOnly(['eventId', 'userId', 'eventCreatorId', 'studentName', 'rollNumber', 'createdAt']) &&
+        data.eventId is string && data.eventId.size() >= 1 && data.eventId.size() <= 128 && data.eventId.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 && data.userId.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.userId == request.auth.uid &&
+        data.eventCreatorId is string && data.eventCreatorId.size() >= 1 && data.eventCreatorId.size() <= 128 && data.eventCreatorId.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.studentName is string && data.studentName.size() >= 1 && data.studentName.size() <= 80 &&
+        data.rollNumber is string && data.rollNumber.size() >= 1 && data.rollNumber.size() <= 40 &&
+        data.createdAt is timestamp;
+    }
+
+    function isValidFriendship(data) {
+      return data.keys().hasAll(['userId', 'friendId', 'createdAt']) &&
+        data.keys().hasOnly(['userId', 'friendId', 'createdAt']) &&
+        data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 && data.userId.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.userId == request.auth.uid &&
+        data.friendId is string && data.friendId.size() >= 1 && data.friendId.size() <= 128 && data.friendId.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.userId != data.friendId &&
+        data.createdAt is timestamp;
+    }
+
+    function isValidFavourite(data) {
+      return data.keys().hasAll(['userId', 'eventId', 'createdAt']) &&
+        data.keys().hasOnly(['userId', 'eventId', 'createdAt']) &&
+        data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 && data.userId.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.userId == request.auth.uid &&
+        data.eventId is string && data.eventId.size() >= 1 && data.eventId.size() <= 128 && data.eventId.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.createdAt is timestamp;
+    }
+
+    function isValidNotification(data) {
+      return data.keys().hasAll(['userId', 'senderId', 'type', 'message', 'isRead', 'createdAt', 'updatedAt']) &&
+        data.keys().hasOnly(['userId', 'senderId', 'type', 'message', 'isRead', 'createdAt', 'updatedAt']) &&
+        data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 && data.userId.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.senderId is string && data.senderId.size() >= 1 && data.senderId.size() <= 128 && data.senderId.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.senderId == request.auth.uid &&
+        data.type is string && data.type.size() <= 40 && (
+          data.type == 'event_created' ||
+          data.type == 'event_participated' ||
+          data.type == 'event_cancelled' ||
+          data.type == 'countdown' ||
+          data.type == 'friend_added' ||
+          data.type == 'friend_removed' ||
+          data.type == 'participant_removed'
+        ) &&
+        data.message is string && data.message.size() >= 1 && data.message.size() <= 500 &&
+        data.isRead is bool &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidNotificationReadUpdate(data) {
+      return data.keys().hasAll(['userId', 'senderId', 'type', 'message', 'isRead', 'createdAt', 'updatedAt']) &&
+        data.keys().hasOnly(['userId', 'senderId', 'type', 'message', 'isRead', 'createdAt', 'updatedAt']) &&
+        data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 && data.userId.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.senderId is string && data.senderId.size() >= 1 && data.senderId.size() <= 128 && data.senderId.matches('^[a-zA-Z0-9_\\-]+$') &&
+        data.type is string && data.type.size() <= 40 &&
+        data.message is string && data.message.size() >= 1 && data.message.size() <= 500 &&
+        data.isRead is bool &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    // Collection 1: Public User Profiles
+    match /users/{userId} {
+      allow get: if isSignedIn() && isValidId(userId) && existing().uid == userId;
+      allow list: if isSignedIn() && existing().uid == request.auth.uid;
+      allow create: if isVerified() && isValidId(userId) && isOwner(userId) &&
+        isValidUserPublic(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isVerified() && isValidUserPublic(incoming()) &&
+        isValidId(userId) && isOwner(userId) &&
+        incoming().uid == existing().uid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['name', 'rollNumber', 'year', 'branch', 'avatarUrl', 'updatedAt']);
+      allow delete: if false;
+
+      // Subcollection: Isolated User PII (Pillar 6)
+      match /private/{docId} {
+        allow get: if isOwner(userId) && isValidId(userId) && isValidId(docId);
+        allow list: if false;
+        allow create: if isVerified() && isOwner(userId) && isValidId(userId) && isValidId(docId) &&
+          isValidUserPrivate(incoming()) &&
+          incoming().updatedAt == request.time &&
+          exists(/databases/$(database)/documents/users/$(userId));
+        allow update: if isVerified() && isValidUserPrivate(incoming()) &&
+          isOwner(userId) && isValidId(userId) && isValidId(docId) &&
+          incoming().uid == existing().uid &&
+          incoming().updatedAt == request.time &&
+          incoming().diff(existing()).affectedKeys().hasOnly(['phone', 'email', 'silentNotifications', 'updatedAt']);
+        allow delete: if false;
+      }
+    }
+
+    // Collection 2: Events
+    match /events/{eventId} {
+      allow get: if isSignedIn() && isValidId(eventId) && (
+        existing().friendsOnly == false || existing().creatorId == request.auth.uid
+      );
+      allow list: if isSignedIn() && (
+        existing().friendsOnly == false || existing().creatorId == request.auth.uid
+      );
+      allow create: if isVerified() && isValidId(eventId) &&
+        isValidEvent(incoming()) &&
+        incoming().status == 'running' &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid));
+      allow update: if isVerified() && isValidEvent(incoming()) &&
+        isValidId(eventId) &&
+        existing().creatorId == request.auth.uid &&
+        incoming().creatorId == existing().creatorId &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        existing().status == 'running' && (
+          // Action 1: Update details while running
+          (incoming().status == 'running' &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['title', 'tag', 'venue', 'description', 'friendsOnly', 'updatedAt'])) ||
+          // Action 2: Transition to terminal state (outdated or cancelled)
+          ((incoming().status == 'outdated' || incoming().status == 'cancelled') &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt']))
+        );
+      allow delete: if isVerified() && isValidId(eventId) && existing().creatorId == request.auth.uid;
+
+      // Subcollection: Event Registrations (Pillar 1 Master Gate)
+      match /registrations/{registrationId} {
+        allow get: if isSignedIn() && isValidId(eventId) && isValidId(registrationId) && (
+          existing().userId == request.auth.uid ||
+          existing().eventCreatorId == request.auth.uid ||
+          get(/databases/$(database)/documents/events/$(eventId)).data.creatorId == request.auth.uid
+        );
+        allow list: if isSignedIn() && (
+          existing().userId == request.auth.uid ||
+          existing().eventCreatorId == request.auth.uid
+        );
+        allow create: if isVerified() && isValidId(eventId) && isValidId(registrationId) &&
+          isValidRegistration(incoming()) &&
+          incoming().eventId == eventId &&
+          incoming().createdAt == request.time &&
+          exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          exists(/databases/$(database)/documents/events/$(eventId)) &&
+          get(/databases/$(database)/documents/events/$(eventId)).data.status == 'running' &&
+          get(/databases/$(database)/documents/events/$(eventId)).data.creatorId == incoming().eventCreatorId;
+        allow update: if false;
+        allow delete: if isVerified() && isValidId(eventId) && isValidId(registrationId) && (
+          existing().userId == request.auth.uid ||
+          get(/databases/$(database)/documents/events/$(eventId)).data.creatorId == request.auth.uid
+        );
+      }
+    }
+
+    // Collection 3: Friendships
+    match /friendships/{friendshipId} {
+      allow get: if isSignedIn() && isValidId(friendshipId) && (
+        existing().userId == request.auth.uid || existing().friendId == request.auth.uid
+      );
+      allow list: if isSignedIn() && (
+        existing().userId == request.auth.uid || existing().friendId == request.auth.uid
+      );
+      allow create: if isVerified() && isValidId(friendshipId) &&
+        isValidFriendship(incoming()) &&
+        incoming().createdAt == request.time &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        exists(/databases/$(database)/documents/users/$(incoming().friendId));
+      allow update: if false;
+      allow delete: if isVerified() && isValidId(friendshipId) && (
+        existing().userId == request.auth.uid || existing().friendId == request.auth.uid
+      );
+    }
+
+    // Collection 4: Favourites
+    match /favourites/{favouriteId} {
+      allow get: if isSignedIn() && isValidId(favouriteId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && existing().userId == request.auth.uid;
+      allow create: if isVerified() && isValidId(favouriteId) &&
+        isValidFavourite(incoming()) &&
+        incoming().createdAt == request.time &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        exists(/databases/$(database)/documents/events/$(incoming().eventId));
+      allow update: if false;
+      allow delete: if isVerified() && isValidId(favouriteId) && existing().userId == request.auth.uid;
+    }
+
+    // Collection 4b: Ignored Events
+    match /ignoredEvents/{ignoredId} {
+      allow get: if isSignedIn() && isValidId(ignoredId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && existing().userId == request.auth.uid;
+      allow create: if isVerified() && isValidId(ignoredId) &&
+        isValidFavourite(incoming()) &&
+        incoming().createdAt == request.time &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        exists(/databases/$(database)/documents/events/$(incoming().eventId));
+      allow update: if false;
+      allow delete: if isVerified() && isValidId(ignoredId) && existing().userId == request.auth.uid;
+    }
+
+    // Collection 5: Notifications
+    match /notifications/{notificationId} {
+      allow get: if isSignedIn() && isValidId(notificationId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && existing().userId == request.auth.uid;
+      allow create: if isVerified() && isValidId(notificationId) &&
+        isValidNotification(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        exists(/databases/$(database)/documents/users/$(incoming().userId));
+      allow update: if isVerified() && isValidNotificationReadUpdate(incoming()) &&
+        isValidId(notificationId) &&
+        existing().userId == request.auth.uid &&
+        incoming().userId == existing().userId &&
+        incoming().senderId == existing().senderId &&
+        incoming().type == existing().type &&
+        incoming().message == existing().message &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['isRead', 'updatedAt']);
+      allow delete: if isVerified() && isValidId(notificationId) && existing().userId == request.auth.uid;
+    }
+  }
+}

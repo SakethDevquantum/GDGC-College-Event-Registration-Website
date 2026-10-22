@@ -1,0 +1,414 @@
+{
+  "entities": {
+    "UserPublic": {
+      "title": "UserPublic",
+      "description": "Public student profile information for Fest-Register.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Owner user UID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Unique student name",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "rollNumber": {
+          "type": "string",
+          "description": "College roll number",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "year": {
+          "type": "number",
+          "description": "College study year (1 to 4)",
+          "enum": [1, 2, 3, 4]
+        },
+        "branch": {
+          "type": "string",
+          "description": "Academic branch",
+          "enum": [
+            "cse",
+            "cse-ai&ml",
+            "cse-ds",
+            "cse-cyber security",
+            "IT",
+            "ECE",
+            "EEE",
+            "Mechanical",
+            "Aeronautical",
+            "Civil"
+          ],
+          "maxLength": 40
+        },
+        "avatarUrl": {
+          "type": "string",
+          "description": "Optional profile avatar URL or data URI",
+          "maxLength": 2048
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp"
+        }
+      },
+      "required": ["uid", "name", "rollNumber", "year", "branch", "createdAt", "updatedAt"]
+    },
+    "UserPrivate": {
+      "title": "UserPrivate",
+      "description": "Isolated PII for student profile including phone number and email.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Owner user UID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "phone": {
+          "type": "string",
+          "description": "Student phone number required for event creation and participation",
+          "minLength": 7,
+          "maxLength": 20
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Student email address",
+          "maxLength": 120
+        },
+        "silentNotifications": {
+          "type": "boolean",
+          "description": "Whether incoming notifications are silenced from popup toasts"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp"
+        }
+      },
+      "required": ["uid", "phone", "silentNotifications", "updatedAt"]
+    },
+    "EventItem": {
+      "title": "EventItem",
+      "description": "College technical event created by a student.",
+      "type": "object",
+      "properties": {
+        "creatorId": {
+          "type": "string",
+          "description": "UID of the event creator",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "title": {
+          "type": "string",
+          "description": "Event title",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "tag": {
+          "type": "string",
+          "description": "Technical category tag",
+          "minLength": 2,
+          "maxLength": 40
+        },
+        "venue": {
+          "type": "string",
+          "description": "Campus venue",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "description": {
+          "type": "string",
+          "description": "Full event description",
+          "minLength": 5,
+          "maxLength": 4000
+        },
+        "registrationStart": {
+          "type": "string",
+          "description": "ISO timestamp for registration opening",
+          "maxLength": 40
+        },
+        "registrationEnd": {
+          "type": "string",
+          "description": "ISO timestamp for registration closing",
+          "maxLength": 40
+        },
+        "eventStart": {
+          "type": "string",
+          "description": "ISO timestamp for event start",
+          "maxLength": 40
+        },
+        "eventEnd": {
+          "type": "string",
+          "description": "ISO timestamp for event end",
+          "maxLength": 40
+        },
+        "friendsOnly": {
+          "type": "boolean",
+          "description": "Whether only friends of the creator can view/register"
+        },
+        "status": {
+          "type": "string",
+          "description": "Event lifecycle state",
+          "enum": ["running", "outdated", "cancelled"],
+          "maxLength": 20
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp"
+        }
+      },
+      "required": [
+        "creatorId",
+        "title",
+        "tag",
+        "venue",
+        "description",
+        "registrationStart",
+        "registrationEnd",
+        "eventStart",
+        "eventEnd",
+        "friendsOnly",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "EventRegistration": {
+      "title": "EventRegistration",
+      "description": "Participant registration submission for an event.",
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "ID of the parent event",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "userId": {
+          "type": "string",
+          "description": "UID of the registering student",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "eventCreatorId": {
+          "type": "string",
+          "description": "UID of the event creator for query authorization",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "studentName": {
+          "type": "string",
+          "description": "Student name at registration",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "rollNumber": {
+          "type": "string",
+          "description": "Student roll number",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Registration timestamp"
+        }
+      },
+      "required": ["eventId", "userId", "eventCreatorId", "studentName", "rollNumber", "createdAt"]
+    },
+    "Friendship": {
+      "title": "Friendship",
+      "description": "Mutual friendship edge between two students.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner user ID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "friendId": {
+          "type": "string",
+          "description": "Friend user ID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Friendship creation time"
+        }
+      },
+      "required": ["userId", "friendId", "createdAt"]
+    },
+    "FavouriteEvent": {
+      "title": "FavouriteEvent",
+      "description": "Starred favourite event record for a student.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner user ID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "eventId": {
+          "type": "string",
+          "description": "Starred event ID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Starred timestamp"
+        }
+      },
+      "required": ["userId", "eventId", "createdAt"]
+    },
+    "IgnoredEvent": {
+      "title": "IgnoredEvent",
+      "description": "Ignored event record for a student (auto-deleted on expiry or after 7 days).",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner user ID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "eventId": {
+          "type": "string",
+          "description": "Ignored event ID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Ignored timestamp"
+        }
+      },
+      "required": ["userId", "eventId", "createdAt"]
+    },
+    "NotificationItem": {
+      "title": "NotificationItem",
+      "description": "User notification for events, registrations, and friendships.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Recipient user ID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "senderId": {
+          "type": "string",
+          "description": "Actor user ID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "type": {
+          "type": "string",
+          "description": "Notification category",
+          "enum": [
+            "event_created",
+            "event_participated",
+            "event_cancelled",
+            "countdown",
+            "friend_added",
+            "friend_removed",
+            "participant_removed"
+          ],
+          "maxLength": 40
+        },
+        "message": {
+          "type": "string",
+          "description": "Notification message text",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "isRead": {
+          "type": "boolean",
+          "description": "Whether notification has been viewed"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Notification timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Notification update timestamp"
+        }
+      },
+      "required": ["userId", "senderId", "type", "message", "isRead", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserPublic" },
+      "description": "Public student profiles."
+    },
+    "/users/{userId}/private/{docId}": {
+      "schema": { "$ref": "#/entities/UserPrivate" },
+      "description": "Isolated PII (phone, email) restricted to the profile owner."
+    },
+    "/events/{eventId}": {
+      "schema": { "$ref": "#/entities/EventItem" },
+      "description": "College technical events."
+    },
+    "/events/{eventId}/registrations/{registrationId}": {
+      "schema": { "$ref": "#/entities/EventRegistration" },
+      "description": "Registrations subcollection under an event."
+    },
+    "/friendships/{friendshipId}": {
+      "schema": { "$ref": "#/entities/Friendship" },
+      "description": "Friendship connections."
+    },
+    "/favourites/{favouriteId}": {
+      "schema": { "$ref": "#/entities/FavouriteEvent" },
+      "description": "User starred favourite events."
+    },
+    "/ignoredEvents/{ignoredId}": {
+      "schema": { "$ref": "#/entities/IgnoredEvent" },
+      "description": "User ignored events removed from Home screen."
+    },
+    "/notifications/{notificationId}": {
+      "schema": { "$ref": "#/entities/NotificationItem" },
+      "description": "User notifications."
+    }
+  }
+}

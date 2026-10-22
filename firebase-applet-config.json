@@ -1,0 +1,12 @@
+{
+  "projectId": "enter your google cloud project id",
+  "appId": "Enter your firebase app id",
+  "apiKey": "Enter fire base api key",
+  "authDomain": "Enter your firebase auth domain",
+  "firestoreDatabaseId": "enter your firestoreDatabaseId",
+  "storageBucket": "enter your firebase storage bucket",
+  "messagingSenderId": "Enter your fcm/cloud messaging sender",
+  "measurementId": "",
+  "oAuthClientId": "Enter your google oauth 2.0 client id",
+  "recaptchaSiteKey": ""
+}

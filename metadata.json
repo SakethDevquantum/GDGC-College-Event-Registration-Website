@@ -1,0 +1,6 @@
+{
+  "name": "Fest-Register",
+  "description": "College technical event registration platform with custom form builder, mutual friend tracking, and live event scheduling.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
