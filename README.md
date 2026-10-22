@@ -62,6 +62,8 @@ A modern, full-stack college technical fest and symposia platform designed for e
 
 Follow these minimal steps to run the complete portal on your local machine with full database, authentication, media, and WebSocket features.
 
+Make sure you made your required changes by adding secret keys and your cloud details in firebase-applet-config.json
+
 ### 1. Prerequisites
 - **Node.js**: Version **22.5.0 or newer** (Node 22 LTS or Node 24 is recommended for native built-in `node:sqlite` and full ESM support).
   - Verify your version in your terminal:
